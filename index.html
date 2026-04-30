@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>BABA ❤</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+* {
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Cairo', sans-serif;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+    background: radial-gradient(circle, #1a0508, #000);
+    transition: background 0.3s ease;
+    touch-action: pan-x pan-y;
+    position: relative;
+}
+
+h1 {
+    position: absolute;
+    top: 12%;
+    width: 90%;
+    left: 5%;
+    font-size: clamp(1.6rem, 7vw, 2.6rem);
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255,77,109,0.6);
+    margin: 0;
+    padding: 0 10px;
+    word-break: keep-all;
+    z-index: 10;
+    pointer-events: none;
+}
+
+button {
+    position: fixed;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: transform 0.08s linear, background 0.2s;
+    will-change: transform, left, top;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 800;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    touch-action: none;
+    z-index: 20;
+}
+
+/* زر طبعا (الحب) */
+#noBtn {
+    left: 50%;
+    top: 58%;
+    transform: translate(-50%, -50%) scale(1);
+    background: #ff4d6d;
+    color: white;
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    padding: 16px 42px;
+    white-space: nowrap;
+    box-shadow: 0 0 15px #ff4d6d;
+    border: 1px solid rgba(255,255,255,0.3);
+    min-width: 170px;
+    width: auto;
+}
+
+/* زر لا (الهارب) */
+#yesBtn {
+    left: 50%;
+    top: 75%;
+    transform: translate(-50%, -50%) scale(1);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    color: #ffb3c6;
+    border: 1.5px solid #ff4d6d;
+    font-size: clamp(1rem, 4.5vw, 1.4rem);
+    padding: 12px 32px;
+    white-space: nowrap;
+    min-width: 130px;
+    transition: left 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1), top 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.08s linear;
+}
+
+/* responsive adjustments */
+@media (max-width: 600px) {
+    #noBtn {
+        padding: 14px 28px;
+        min-width: 150px;
+        font-size: 1.2rem;
+        top: 60%;
+    }
+    #yesBtn {
+        padding: 10px 24px;
+        min-width: 115px;
+        font-size: 1rem;
+        top: 76%;
+    }
+    h1 {
+        top: 8%;
+        font-size: 1.8rem;
+    }
+}
+
+/* overlay النهائي - بالضبط كما طلبت */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #ff1a4a, #2a0006);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0s 0.8s;
+    z-index: 100;
+    text-align: center;
+    backdrop-filter: blur(8px);
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.8s ease, visibility 0s 0s;
+}
+
+/* القلب النابض */
+.heart-main {
+    font-size: clamp(80px, 20vw, 150px);
+    animation: heartbeat 0.9s infinite ease-in-out;
+    filter: drop-shadow(0 0 20px #ff4d6d);
+}
+
+@keyframes heartbeat {
+    0% { transform: scale(1); text-shadow: 0 0 0px #ff4d6d;}
+    50% { transform: scale(1.2); text-shadow: 0 0 25px #ff9eb5;}
+    100% { transform: scale(1); text-shadow: 0 0 5px #ff4d6d;}
+}
+
+.overlay h1 {
+    position: relative;
+    top: auto;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    margin: 20px;
+    animation: fadeSlide 0.6s ease;
+}
+
+.overlay h2 {
+    font-size: clamp(1.3rem, 5vw, 2rem);
+    margin-top: 10px;
+    animation: fadeSlide 0.8s ease;
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button:active {
+    transform: translate(-50%, -50%) scale(0.97);
+    transition: 0.02s;
+}
+</style>
+</head>
+<body>
+
+<h1 id="question">بتحب حبيبه...؟🙂</h1>
+
+<button id="noBtn">طبعا❤️🤗</button>
+<button id="yesBtn">لا 😏</button>
+
+<div class="overlay" id="overlay">
+    <h1>بحبك مووووت ❤️😘</h1>
+    <div class="heart-main">❤️</div>
+    <h2>أجمل بابا في الدنيا😌</h2>
+</div>
+
+<script>
+(function() {
+    // عناصر DOM
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const overlay = document.getElementById("overlay");
+    const questionEl = document.getElementById("question");
+    
+    // حالة اللعبة
+    let stage = 0;              // 0: سؤال أول, 1: السؤال الثاني, 2: الاستاد, 3: نهاية
+    let noScale = 1;           // مقياس زر طبعا
+    let yesScale = 1;          // مقياس زر لا
+    let escapeSpeed = 0.18;    // سرعة الهروب
+    let isFinalMode = false;    // وضع النهاية
+    
+    let canEscape = true;       // لمنع الهروب المتكرر جداً
+    
+    // تغيير الخلفية بشكل عشوائي
+    function changeBg() {
+        const colors = ["#1a0508", "#2a0a12", "#3a0f1a", "#000000", "#22000a", "#350d15"];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        document.body.style.background = `radial-gradient(circle at 30% 40%, ${randomColor}, #010001)`;
+    }
+    
+    // اهتزاز للأجهزة المدعومة
+    function shake() {
+        if (navigator.vibrate) {
+            navigator.vibrate(40);
+        }
+    }
+    
+    // تحديث حجم زر طبعا مع الحفاظ على المركز
+    function updateNoScale(newScale) {
+        noScale = Math.min(newScale, 3.2);
+        noBtn.style.transform = `translate(-50%, -50%) scale(${noScale})`;
+        if (noScale > 1.8) {
+            noBtn.style.boxShadow = `0 0 28px #ff758f`;
+        } else {
+            noBtn.style.boxShadow = `0 8px 20px rgba(0,0,0,0.3)`;
+        }
+    }
+    
+    // تحديث حجم زر لا
+    function updateYesScale(newScale) {
+        yesScale = Math.max(newScale, 0.28);
+        yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+    }
+    
+    // تكبير زر طبعا
+    function growNoButton(increment = 0.22) {
+        updateNoScale(noScale + increment);
+    }
+    
+    // 🏃 هروب ذكي لزر لا - يتحرك في مكان عشوائي بالشاشة
+    function smartEscape() {
+        if (isFinalMode) return;
+        if (!canEscape) return;
+        canEscape = false;
+        setTimeout(() => { canEscape = true; }, 110);
+        
+        shake();
+        changeBg();
+        
+        // حساب أبعاد الشاشة
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        const btnW = yesBtn.offsetWidth;
+        const btnH = yesBtn.offsetHeight;
+        
+        const margin = 25;
+        const maxX = winW - btnW - margin;
+        const minX = margin;
+        const maxY = winH - btnH - margin;
+        const minY = margin;
+        
+        let randomX = Math.random() * (maxX - minX) + minX;
+        let randomY = Math.random() * (maxY - minY) + minY;
+        
+        // تجنب الاقتراب من زر طبعا
+        const noRect = noBtn.getBoundingClientRect();
+        const dx = randomX + btnW/2 - (noRect.left + noRect.width/2);
+        const dy = randomY + btnH/2 - (noRect.top + noRect.height/2);
+        if (Math.abs(dx) < 110 && Math.abs(dy) < 110 && winW > 400) {
+            randomX = (randomX + 140) % (maxX - minX) + minX;
+            randomY = (randomY + 100) % (maxY - minY) + minY;
+        }
+        
+        // حركة هروب سريعة
+        gsap.to(yesBtn, {
+            left: randomX,
+            top: randomY,
+            duration: escapeSpeed,
+            ease: "power2.out",
+            overwrite: true
+        });
+        
+        // تقليص زر لا تدريجياً
+        let newYesScale = yesScale - 0.09;
+        if (newYesScale < 0.3) newYesScale = 0.3;
+        updateYesScale(newYesScale);
+        
+        // تكبير زر طبعا مع كل هروب
+        let newNoScale = noScale + 0.1;
+        if (newNoScale > 3.0) newNoScale = 3.0;
+        updateNoScale(newNoScale);
+        
+        // زيادة سرعة الهروب
+        if (escapeSpeed > 0.07) {
+            escapeSpeed = Math.max(0.07, escapeSpeed - 0.01);
+        }
+    }
+    
+    // 🔥 تنبؤ باللمس للموبايل - يهرب قبل أن يلمسه الإصبع
+    function predictTouch(e) {
+        if (isFinalMode) return;
+        if (!yesBtn || e.touches.length === 0) return;
+        const touch = e.touches[0];
+        const rect = yesBtn.getBoundingClientRect();
+        const proximity = 95;
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distX = Math.abs(touch.clientX - centerX);
+        const distY = Math.abs(touch.clientY - centerY);
+        
+        if (distX < proximity && distY < proximity) {
+            e.preventDefault();
+            smartEscape();
+        }
+    }
+    
+    // منع أي محاولة لمس لزر لا بشكل نهائي
+    function blockYesTouch(e) {
+        if (isFinalMode) return;
+        e.preventDefault();
+        e.stopPropagation();
+        smartEscape();
+        return false;
+    }
+    
+    // للكمبيوتر - mouseenter يهرب
+    function onMouseEnter() {
+        if (!isFinalMode) {
+            smartEscape();
+        }
+    }
+    
+    // عند محاولة الضغط على زر لا
+    function onYesClick(e) {
+        if (isFinalMode) {
+            e.preventDefault();
+            return;
+        }
+        e.preventDefault();
+        smartEscape();
+        
+        // تغيير السؤال قليلاً للمزاح
+        if (stage === 0) {
+            questionEl.innerText = "هديك فرصه تانيه بتحب حبيبه صح 😂😂";
+            setTimeout(() => {
+                if (stage === 0 && !isFinalMode) {
+                    questionEl.innerText = "بتحب حبيبه...؟🙂";
+                }
+            }, 1500);
+        } else if (stage === 1 && !isFinalMode) {
+            questionEl.innerText = "لا تقدر تهرب 🤍";
+            setTimeout(() => {
+                if (stage === 1 && !isFinalMode) questionEl.innerText = "يعني بتحب تشوفني مبسوطة؟ 🙈";
+            }, 1000);
+        }
+        return false;
+    }
+    
+    // 🎉 النهاية السعيدة - بالضبط كما طلبت: confetti + overlay + gsap.from للقلب
+    function showFinal() {
+        if (overlay.classList.contains("active")) return;
+        isFinalMode = true;
+        
+        // إطلاق الكونفيتي كما في الكود الأصلي
+        confetti({
+            particleCount: 2000,
+            spread: 400,
+            origin: { y: 0.3 },
+            colors: ['#ff4d6d', '#ff758f', '#ffffff']
+        });
+        
+        // إظهار overlay
+        overlay.classList.add("active");
+        
+        // تشغيل gsap.from للقلب كما في الكود الأصلي
+        gsap.from(".heart-main", {
+            scale: 2,
+            duration: 0.8,
+            repeat: -1,
+            yoyo: true
+        });
+    }
+    
+    // عند الضغط على زر "طبعا" - التقدم بالمراحل
+    function onNoClick() {
+        // تكبير الزر
+        let newScale = noScale + 0.28;
+        if (newScale > 3.2) newScale = 3.2;
+        updateNoScale(newScale);
+        shake();
+        changeBg();
+        
+        if (isFinalMode) {
+            showFinal();
+            return;
+        }
+        
+        // مراحل الحوار
+        if (stage === 0) {
+            questionEl.innerText = "يعني بتحب تشوفني مبسوطة؟ 🙈";
+            stage = 1;
+            // إعادة ضبط حجم زر لا إذا صغر كثيراً
+            if (yesScale < 0.5) {
+                updateYesScale(0.85);
+                yesScale = 0.85;
+            }
+            escapeSpeed = 0.18;
+        } 
+        else if (stage === 1) {
+            questionEl.innerText = "يعني موافق أروح الاستاد؟ 🙈";
+            stage = 2;
+            if (yesScale > 0.4) {
+                updateYesScale(yesScale * 0.8);
+            }
+            escapeSpeed = Math.max(0.09, escapeSpeed - 0.02);
+        } 
+        else if (stage === 2) {
+            // الدخول إلى النهاية السعيدة
+            isFinalMode = true;
+            questionEl.innerText = "مفيش هروب 😌❤️";
+            noBtn.innerText = "تمام خلاص ❤️";
+            yesBtn.innerText = "بحبك 😏";
+            
+            // إعادة تعريف أزرار لتؤدي للنهاية
+            yesBtn.onclick = (e) => {
+                e.preventDefault();
+                showFinal();
+            };
+            yesBtn.addEventListener("touchstart", (e) => { e.preventDefault(); showFinal(); }, { once: false });
+            noBtn.onclick = () => { showFinal(); };
+            
+            // عرض النهاية فوراً
+            showFinal();
+            return;
+        }
+    }
+    
+    // إعادة ضبط المواضع الأولية
+    function repositionButtons() {
+        gsap.set(noBtn, { left: '50%', top: '58%' });
+        gsap.set(yesBtn, { left: '50%', top: '75%' });
+        updateNoScale(1);
+        updateYesScale(1);
+        noScale = 1;
+        yesScale = 1;
+        escapeSpeed = 0.18;
+    }
+    
+    // معالجة تغيير حجم الشاشة
+    function handleResize() {
+        if (isFinalMode) return;
+        // التأكد من أن زر لا داخل الشاشة
+        const rect = yesBtn.getBoundingClientRect();
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        let currentLeft = parseFloat(yesBtn.style.left);
+        let currentTop = parseFloat(yesBtn.style.top);
+        if (isNaN(currentLeft)) currentLeft = winW/2;
+        if (isNaN(currentTop)) currentTop = winH*0.75;
+        
+        const maxL = winW - yesBtn.offsetWidth - 20;
+        const minL = 20;
+        const maxT = winH - yesBtn.offsetHeight - 25;
+        const minT = 50;
+        let finalLeft = Math.min(maxL, Math.max(minL, currentLeft));
+        let finalTop = Math.min(maxT, Math.max(minT, currentTop));
+        if (finalLeft !== currentLeft || finalTop !== currentTop) {
+            gsap.set(yesBtn, { left: finalLeft, top: finalTop });
+        }
+        gsap.set(noBtn, { left: '50%', top: Math.min(winH*0.68, winH-100) });
+    }
+    
+    // ربط الأحداث
+    function bindEvents() {
+        noBtn.addEventListener("click", onNoClick);
+        noBtn.addEventListener("touchstart", (e) => {
+            onNoClick();
+            e.preventDefault();
+        });
+        
+        yesBtn.addEventListener("click", onYesClick);
+        yesBtn.addEventListener("touchstart", blockYesTouch);
+        yesBtn.addEventListener("touchmove", predictTouch, { passive: false });
+        yesBtn.addEventListener("mouseenter", onMouseEnter);
+        yesBtn.addEventListener("contextmenu", (e) => e.preventDefault());
+        
+        window.addEventListener("resize", () => {
+            setTimeout(handleResize, 50);
+        });
+        handleResize();
+    }
+    
+    // اكتشاف اللمس القريب من زر لا حتى بدون لمسه مباشرة (للموبايل)
+    document.body.addEventListener('touchmove', function(e) {
+        if (isFinalMode) return;
+        if (yesBtn && !isFinalMode) {
+            const touch = e.touches[0];
+            const rect = yesBtn.getBoundingClientRect();
+            const distX = Math.abs(touch.clientX - (rect.left + rect.width/2));
+            const distY = Math.abs(touch.clientY - (rect.top + rect.height/2));
+            if (distX < 110 && distY < 110 && !isFinalMode) {
+                e.preventDefault();
+                smartEscape();
+            }
+        }
+    }, { passive: false });
+    
+    // بدء التشغيل
+    repositionButtons();
+    bindEvents();
+    
+    // إضافة تأثير نبض أولي خفيف للزر الرئيسي (ممتع)
+    gsap.to(noBtn, {
+        scale: 1.02,
+        duration: 0.8,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+        modifiers: {
+            scale: (x) => `translate(-50%, -50%) scale(${parseFloat(x)})`
+        }
+    });
+    
+})();
+</script>
+</body>
+</html>
